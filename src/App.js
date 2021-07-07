@@ -1,26 +1,60 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import axios from "axios";
+import ReactLoading from "react-loading";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import StockEventsTable from "./components/StockEventsTable";
+
+import "./App.css";
+
+class App extends React.Component {
+  state = {
+    fetchedProducts: null,
+    fetchedStockEvents: null,
+  };
+
+  async componentDidMount() {
+    const productsResp = await axios({
+      method: "GET",
+      url: "http://localhost:1337/products",
+    });
+    const stockEventResp = await axios({
+      method: "GET",
+      url: "http://localhost:1337/stockevents",
+    });
+
+    const fetchedProducts = productsResp.data;
+    const fetchedStockEvents = stockEventResp.data;
+
+    this.setState({
+      fetchedProducts,
+      fetchedStockEvents,
+    });
+  }
+
+  render() {
+    const { fetchedProducts, fetchedStockEvents } = this.state;
+    const type = "spin";
+    const color = "#aea";
+    return (
+      <div className="App">
+        <h1>The Stock App</h1>
+
+        {fetchedProducts ? (
+          <StockEventsTable
+            id={1}
+            products={fetchedProducts}
+            stockEvents={fetchedStockEvents}
+          />
+        ) : (
+          <ReactLoading type={type} color={color} height={50} width={50} />
+        )}
+        <br />
+        <br />
+        <br />
+        <br />
+      </div>
+    );
+  }
 }
 
 export default App;
